@@ -15,10 +15,15 @@ describe('Padelito', () => {
     cy.get('input#date').click()
     const dateIn7Days = new Date()
     dateIn7Days.setDate(dateIn7Days.getDate() + 7)
+    if ((new Date()).getMonth() !== dateIn7Days.getMonth()) {
+      // Si le jour de la semaine suivante est dans le mois suivant
+      // Sélectionner le mois suivant en cliquant sur le bouton suivant
+      cy.get('.ui-datepicker-next').click()
+    }
     cy.get('a').contains(dateIn7Days.getDate()).click()
     cy.get('select#heure').select('07:00');
     cy.wait(6000)
-    cy.contains('div.card-body', 'court 7 Babolat').find('button').contains('16:30').click()
+    cy.contains('div.card-body', 'court 7 Babolat').find('button').contains(Cypress.env('HORAIRE')).click()
     cy.wait(200)
     const time = new Date().toISOString()
     cy.screenshot(`reservation-horaire-${time}`)
