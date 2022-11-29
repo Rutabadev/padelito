@@ -2,10 +2,11 @@
   "name": "padelito",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.mjs",
+  "type": "module",
   "scripts": {
-    "start": "cypress open",
-    "book": "node .",
+    "cypress": "cypress open",
+    "start": "node main.mjs --horaire 10:30",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

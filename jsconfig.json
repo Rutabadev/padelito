@@ -2,5 +2,5 @@
 	"compilerOptions": {
 		"types": ["node", "cypress"]
 	},
-	"include": ["./**/*.js"]
+	"include": ["./**/*.js", "main.mjs", "index.mjs"]
 }
