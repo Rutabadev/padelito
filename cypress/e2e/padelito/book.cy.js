@@ -25,7 +25,7 @@ describe('Padelito', () => {
     cy.wait(6000)
     cy.contains('div.card-body', 'court 7 Babolat').find('button').contains(Cypress.env('HORAIRE')).click()
     cy.wait(200)
-    const time = new Date().toISOString()
+    const time = new Date().toISOString().replace(/T/g, '_').replace(/:/g, '-').slice(0, -5)
     cy.screenshot(`reservation-horaire-${time}`)
     cy.contains('div.card-body', 'court 7 Babolat').find('button').contains('button', 'Réserver').click()
     cy.wait(200)
