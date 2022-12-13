@@ -1,22 +1,18 @@
-import puppeteer from "puppeteer";
+import chromium from "chrome-aws-lambda";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const config = {
-  executablePath: "/usr/bin/google-chrome",
-  args: [
-    "--disable-extensions",
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu",
-  ],
-};
 
 export const handler = async ({ horaire = "18:00" }) => {
   const dateIn7Days = new Date();
   dateIn7Days.setDate(dateIn7Days.getDate() + 7);
   console.log(`Booking padel court at ${horaire} on ${dateIn7Days.toDateString()}`);
-  const browser = await puppeteer.launch(config);
+  const browser = await chromium.puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+    ignoreHTTPSErrors: true,
+  });
   const page = await browser.newPage();
 
   // Login
@@ -152,4 +148,5 @@ export const handler = async ({ horaire = "18:00" }) => {
 	// TODO: click on book button
   }
   console.log('Booking done with success');
+  return 'Booking done with success';
 };
