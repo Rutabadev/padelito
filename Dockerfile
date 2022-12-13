@@ -1,42 +1,15 @@
 FROM public.ecr.aws/lambda/nodejs:18
 
-RUN yum install -y \
-    fonts-liberation \
-    gconf-service \
-    libappindicator1 \
-    libasound2 \
-    libatk1.0-0 \
-    libcairo2 \
-    libcups2 \
-    libfontconfig1 \
-    libgbm-dev \
-    libgdk-pixbuf2.0-0 \
-    libgtk-3-0 \
-    libicu-dev \
-    libjpeg-dev \
-    libnspr4 \
-    libnss3 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libpng-dev \
-    libx11-6 \
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    libxtst6 \
-    xdg-util
+ENV PATH /opt/node_app/node_modules/.bin:$PATH
+ENV NODE_ENV production
+ENV AWS_NODEJS_CONNECTION_REUSE_ENABLED 1
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+RUN yum install wget curl -y
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+RUN yum install ./google-chrome-stable_current_*.rpm -y
 
 COPY package*.json index.mjs ./
 RUN npm install --omit=dev
-
-RUN chmod -R o+rwx .cache
 
 CMD [ "index.handler" ]
