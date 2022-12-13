@@ -1,4 +1,5 @@
-import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -8,7 +9,7 @@ export const handler = async ({ horaire = "18:00" }) => {
   console.log(
     `Booking padel court at ${horaire} on ${dateIn7Days.toDateString()}`
   );
-  const browser = await chromium.puppeteer.launch({
+  const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
