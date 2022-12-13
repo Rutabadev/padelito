@@ -1,6 +1,0 @@
-{
-	"compilerOptions": {
-		"types": ["node", "cypress"]
-	},
-	"include": ["./**/*.js", "main.mjs", "index.mjs"]
-}

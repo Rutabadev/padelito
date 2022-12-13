@@ -5,14 +5,13 @@
   "main": "main.mjs",
   "type": "module",
   "scripts": {
-    "cypress": "cypress open",
-    "start": "node main.mjs --horaire 10:30",
+    "start": "node main.mjs --horaire=10:30",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^11.1.0"
+    "puppeteer": "^19.4.0"
   }
 }
