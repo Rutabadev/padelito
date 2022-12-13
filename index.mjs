@@ -1,16 +1,27 @@
 import puppeteer from "puppeteer";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const config = {
+  executablePath: "/usr/bin/google-chrome",
+  args: [
+    "--disable-extensions",
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+  ],
+};
 
 export const handler = async ({ horaire = "18:00" }) => {
   const dateIn7Days = new Date();
   dateIn7Days.setDate(dateIn7Days.getDate() + 7);
   console.log(`Booking padel court at ${horaire} on ${dateIn7Days.toDateString()}`);
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch(config);
   const page = await browser.newPage();
 
   // Login
   await page.goto("https://toulousepadelclub.gestion-sports.com");
+  console.log('Go to login page');
 
   // Get a span with text "Connexion" and click it
   await page.$$eval("span", (spans) => {
@@ -20,6 +31,7 @@ export const handler = async ({ horaire = "18:00" }) => {
   await page.type("input[type=text][name=email]", "etienner37@gmail.com");
   await page.type("input[type=password][name=pass]", "7c3bK!k6ca4qbYy");
   await page.keyboard.press("Enter");
+  console.log('Login done');
 
   // Accueil
   await Promise.all([
@@ -28,6 +40,7 @@ export const handler = async ({ horaire = "18:00" }) => {
   ]);
   await wait(2000);
   await page.click('a[href="reservation.html"]');
+  console.log('Go to reservation page');
 
   // Réservation
   await page.waitForSelector("select#sport option"), await wait(200);
@@ -39,6 +52,7 @@ export const handler = async ({ horaire = "18:00" }) => {
     select.value = option.value;
     select.dispatchEvent(new Event("change"));
   });
+  console.log('Select Padel');
   await page.waitForSelector("input#date");
   await wait(3000);
   await page.click("input#date");
@@ -59,6 +73,7 @@ export const handler = async ({ horaire = "18:00" }) => {
     },
     dateIn7Days
   );
+  console.log('Select date');
   await page.waitForSelector("select#heure");
   await page.waitForSelector('select#heure option[value=" 07:00"]');
   await page.$eval("select#heure", (select) => {
@@ -68,6 +83,7 @@ export const handler = async ({ horaire = "18:00" }) => {
     select.value = option.value;
     select.dispatchEvent(new Event("change"));
   });
+  console.log('Select hour');
   await page.waitForSelector("div.card-body");
   const courtDivs = await page.$$("div.card-body");
   await wait(400);
@@ -83,6 +99,7 @@ export const handler = async ({ horaire = "18:00" }) => {
     (el) => (el.style.cssText += "border: 5px solid red !important;"),
     babolatDiv
   );
+  console.log('Found court');
   const horaireButtons = await babolatDiv.$$("button");
   let horaireButton;
   for (const button of horaireButtons) {
@@ -100,6 +117,7 @@ export const handler = async ({ horaire = "18:00" }) => {
     horaireButton
   );
   await page.evaluate((button) => button.click(), horaireButton);
+  console.log('Clicked on horaire');
   const date = new Date();
   const time =
     date.toISOString().substring(0, 10) +
@@ -123,6 +141,7 @@ export const handler = async ({ horaire = "18:00" }) => {
     path: `.screenshots/${time}-reservation-horaire.png`,
   });
   await page.evaluate((button) => button.click(), reserverButton);
+  console.log('Clicked on reserver');
   await page.waitForSelector("div.modal#choix_paiement");
   await wait(500);
   await page.screenshot({
