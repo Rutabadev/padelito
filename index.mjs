@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
