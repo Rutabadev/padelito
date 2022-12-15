@@ -137,14 +137,14 @@ export const handler = async ({ horaire = "18:00" }) => {
   );
   await page.$eval("div.appBottomMenu", (div) => div.remove());
   await babolatDiv.screenshot({
-    path: `.screenshots/${time}-reservation-horaire.png`,
+    path: `screenshots/${time}-reservation-horaire.png`,
   });
   await page.evaluate((button) => button.click(), reserverButton);
   console.log("Clicked on reserver");
   await page.waitForSelector("div.modal#choix_paiement");
   await wait(500);
   await page.screenshot({
-    path: `.screenshots/${time}-reservation-paiement.png`,
+    path: `screenshots/${time}-reservation-paiement.png`,
   });
   await browser.close();
   if (process.env.BOOK) {
