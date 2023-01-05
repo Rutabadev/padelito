@@ -15,5 +15,4 @@ Impossible right now (possible with docket on windows).
 Create an EventBridge rule to trigger the lambda function at the desired time (midnight 7 days before the day you want to play).
 
 ## Deployment
-
 Update the code or the layer directly in AWS Console.
