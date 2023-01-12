@@ -136,16 +136,20 @@ export const handler = async ({ horaire = "18:00" }) => {
     reserverButton
   );
   await page.$eval("div.appBottomMenu", (div) => div.remove());
-  await babolatDiv.screenshot({
-    path: `screenshots/${time}-reservation-horaire.png`,
-  });
+  if (process.env.SCREENSHOT) {
+    await babolatDiv.screenshot({
+      path: `screenshots/${time}-reservation-horaire.png`,
+    });
+  }
   await page.evaluate((button) => button.click(), reserverButton);
   console.log("Clicked on reserver");
   await page.waitForSelector("div.modal#choix_paiement");
   await wait(500);
-  await page.screenshot({
-    path: `screenshots/${time}-reservation-paiement.png`,
-  });
+  if (process.env.SCREENSHOT) {
+    await page.screenshot({
+      path: `screenshots/${time}-reservation-paiement.png`,
+    });
+  }
   await browser.close();
   if (process.env.BOOK) {
     // TODO: click on book button
