@@ -86,31 +86,35 @@ export const handler = async ({ horaire = "18:00" }) => {
   await page.waitForSelector("div.card-body");
   const courtDivs = await page.$$("div.card-body");
   await wait(400);
-  let babolatDiv;
-  for (const div of courtDivs) {
-    const title = await div.$eval("div.card-title", (div) => div.innerText);
-    if (title.includes("court 7 Babolat")) {
-      babolatDiv = div;
-      break;
-    }
-  }
-  await page.evaluate(
-    (el) => (el.style.cssText += "border: 5px solid red !important;"),
-    babolatDiv
-  );
-  console.log("Found court");
-  const horaireButtons = await babolatDiv.$$("button");
+  let courtDiv;
+  let selectedCourtLabel;
   let horaireButton;
-  for (const button of horaireButtons) {
-    const text = await button.evaluate((button) => button.innerText);
-    if (text.includes(horaire)) {
-      horaireButton = button;
-      break;
+  const courtsLabels = new Array(14).fill(0).map((_, i) => `court ${i + 1}`);
+  courtsLoop: for (const currentCourtDiv of courtDivs) {
+    const title = await currentCourtDiv.$eval("div.card-title", (div) => div.innerText);
+    for (const courtLabel of courtsLabels) {
+      if (title.includes(courtLabel)) {
+        const horaireButtons = await currentCourtDiv.$$("button");
+        for (const button of horaireButtons) {
+          const text = await button.evaluate((button) => button.innerText);
+          if (text.includes(horaire)) {
+            horaireButton = button;
+            courtDiv = currentCourtDiv;
+            selectedCourtLabel = title;
+            break courtsLoop;
+          }
+        }
+      }
     }
   }
   if (!horaireButton) {
     throw new Error("Horaire non trouvé");
   }
+  console.log("Found", selectedCourtLabel);
+  await page.evaluate(
+    (el) => (el.style.cssText += "border: 5px solid red !important;"),
+    courtDiv
+  );
   await page.evaluate(
     (el) => (el.style.cssText += "border: 5px solid hotpink !important;"),
     horaireButton
@@ -122,7 +126,7 @@ export const handler = async ({ horaire = "18:00" }) => {
     date.toISOString().substring(0, 10) +
     "-" +
     date.toLocaleTimeString("fr").replace(/:/g, "-");
-  const babolatDivButtons = await babolatDiv.$$("button");
+  const babolatDivButtons = await courtDiv.$$("button");
   let reserverButton;
   for (const button of babolatDivButtons) {
     const text = await button.evaluate((button) => button.innerText);
@@ -137,7 +141,7 @@ export const handler = async ({ horaire = "18:00" }) => {
   );
   await page.$eval("div.appBottomMenu", (div) => div.remove());
   if (process.env.SCREENSHOT) {
-    await babolatDiv.screenshot({
+    await courtDiv.screenshot({
       path: `screenshots/${time}-reservation-horaire.png`,
     });
   }
@@ -154,9 +158,9 @@ export const handler = async ({ horaire = "18:00" }) => {
   if (process.env.BOOK) {
     // TODO: click on book button
   }
-  console.log("Booking done with success");
+  console.log("Booking done with success:", selectedCourtLabel);
   return {
     statusCode: 200,
-    body: JSON.stringify("Booking done with success"),
+    body: JSON.stringify("Booking done with success:", selectedCourtLabel),
   };
 };
